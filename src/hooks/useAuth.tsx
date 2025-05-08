@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: `Welcome back, ${email}!`,
       });
 
-      navigate("/dashboard/ngo");
+      navigate("/setup");
     } catch (error: any) {
       toast({
         title: "Sign in failed",
