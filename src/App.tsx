@@ -30,6 +30,7 @@ import NGOPartnersPage from "./pages/ngo/PartnersPage";
 import NGOStakeholdersPage from "./pages/ngo/StakeholdersPage";
 import NGOProjectDetailPage from "./pages/ngo/ProjectDetailPage";
 import NGONewProjectPage from "./pages/ngo/NewProjectPage";
+import CreateOrganizationPage from "./pages/ngo/CreateOrganizationPage"; // Add import for new page
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => {
                   {/* Protected NGO Routes */}
                   <Route element={<RequireAuth />}>
                     <Route path="/dashboard/ngo" element={<NGODashboard />} />
+                    <Route path="/dashboard/ngo/create-organization" element={<CreateOrganizationPage />} /> {/* Add new route */}
                     <Route path="/dashboard/ngo/projects" element={<NGOProjectsPage />} />
                     <Route path="/dashboard/ngo/projects/new" element={<NGONewProjectPage />} />
                     <Route path="/dashboard/ngo/projects/:id" element={<NGOProjectDetailPage />} />

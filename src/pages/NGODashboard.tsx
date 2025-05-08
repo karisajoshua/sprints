@@ -15,10 +15,11 @@ const NGODashboard = () => {
   const navigate = useNavigate();
   const [isSettingUp, setIsSettingUp] = useState(false);
   
-  // Check if user has an organization, redirect if not
+  // Check for various navigation scenarios
   useEffect(() => {
     // Check if user just came from setup wizard
     const isFromSetup = sessionStorage.getItem("fromSetupWizard") === "true";
+    const newOrgCreated = sessionStorage.getItem("newOrgCreated") === "true";
     
     if (isFromSetup && !isSettingUp) {
       setIsSettingUp(true);
@@ -33,8 +34,13 @@ const NGODashboard = () => {
       });
     }
     
-    // Only redirect if not currently setting up from wizard
-    if (!authLoading && !orgLoading && !isSettingUp) {
+    // If new org was created, clear the flag
+    if (newOrgCreated) {
+      sessionStorage.removeItem("newOrgCreated");
+    }
+    
+    // Only redirect if not currently setting up from wizard and not just created an org
+    if (!authLoading && !orgLoading && !isSettingUp && !newOrgCreated) {
       if (user && organizations.length === 0) {
         // User has no organizations, redirect to create organization page
         toast({
@@ -42,9 +48,8 @@ const NGODashboard = () => {
           description: "Let's create your first organization to get started.",
         });
         
-        // For now we'll redirect to the dashboard, in a real app you'd
-        // redirect to a proper organization creation page
-        navigate('/dashboard');
+        // Redirect to the dedicated organization creation page
+        navigate('/dashboard/ngo/create-organization');
       }
     }
   }, [user, organizations, authLoading, orgLoading, navigate, isSettingUp]);

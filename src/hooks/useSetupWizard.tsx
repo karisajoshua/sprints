@@ -40,27 +40,8 @@ export const useSetupWizard = () => {
     localStorage.setItem("oneMapTeamType", teamType);
     localStorage.setItem("oneMapSetupAnswers", JSON.stringify(answers));
     
-    // For NGO team type, create an organization if the user doesn't have one
-    if (teamType === "ngo" && user) {
-      try {
-        // If this is an NGO user, create a default organization for them
-        // We use a generic name that they can change later
-        const orgName = answers?.missionFocus ? 
-          `${answers.missionFocus} Organization` : 
-          "My NGO Organization";
-        
-        await createOrganization({ name: orgName });
-        
-        toast({
-          title: "Organization Created",
-          description: "Your NGO dashboard is ready with a default organization.",
-        });
-      } catch (error) {
-        console.error("Failed to create organization:", error);
-        // Continue with navigation even if organization creation fails
-        // The NGO dashboard will handle the case where no organizations exist
-      }
-    }
+    // For NGO team type, we will let NGODashboard handle the organization flow
+    // This is a cleaner UX than trying to create it here without visual feedback
     
     toast({
       title: "Setup Complete!",
@@ -98,7 +79,7 @@ export const useSetupWizard = () => {
   // Setup loading process
   useEffect(() => {
     if (isLoading) {
-      const duration = 40000; // 40 seconds
+      const duration = 3000; // Reduced to 3 seconds for better UX
       const interval = 100; // Update every 100ms
       const steps = duration / interval;
       const incrementPerStep = 100 / steps;
@@ -121,7 +102,7 @@ export const useSetupWizard = () => {
             clearInterval(timer);
             setTimeout(() => {
               completeSetup();
-            }, 1000); // Small delay to ensure animations complete
+            }, 500); // Small delay to ensure animations complete
           }
           
           return newProgress;
