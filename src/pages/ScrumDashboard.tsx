@@ -1,12 +1,36 @@
 
-import React from "react";
-import { Sidebar, SidebarContent, SidebarTrigger, SidebarProvider, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel } from "@/components/ui/sidebar";
-import { LayoutDashboard, CheckCircle, Calendar, Users, Settings, PlusCircle, Clock, FileText, Layers } from "lucide-react";
+import React, { useState } from "react";
+import { 
+  Sidebar, SidebarContent, SidebarTrigger, SidebarProvider, 
+  SidebarMenu, SidebarMenuItem, SidebarMenuButton, 
+  SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel 
+} from "@/components/ui/sidebar";
+import { 
+  LayoutDashboard, CheckCircle, Calendar, Users, Settings, 
+  PlusCircle, FileText, Layers, Kanban, Briefcase, 
+  BarChart3, Clock
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { ScrumProvider, useScrum } from "@/components/scrum/ScrumContext";
+import { useAuth } from "@/hooks/useAuth";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { createDepartment } from "@/services/scrumService";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DepartmentManagement } from "@/components/scrum/DepartmentManagement";
+import { TeamManagement } from "@/components/scrum/TeamManagement";
+import { SprintManagement } from "@/components/scrum/SprintManagement";
+import { TaskBoard } from "@/components/scrum/TaskBoard";
 
-const ScrumSidebar = () => {
+type TabType = "dashboard" | "backlog" | "sprints" | "team" | "settings";
+
+const ScrumSidebar = ({ activeTab, setActiveTab }: { 
+  activeTab: TabType, 
+  setActiveTab: (tab: TabType) => void
+}) => {
+  const { currentDepartment } = useScrum();
+  
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center px-6 py-4 h-[60px]">
@@ -20,25 +44,37 @@ const ScrumSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
+                <SidebarMenuButton 
+                  className={`flex items-center gap-3 ${activeTab === 'dashboard' ? 'text-emerald' : ''}`}
+                  onClick={() => setActiveTab('dashboard')}
+                >
                   <LayoutDashboard className="w-4 h-4" />
                   <span>Dashboard</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
+                <SidebarMenuButton 
+                  className={`flex items-center gap-3 ${activeTab === 'backlog' ? 'text-emerald' : ''}`}
+                  onClick={() => setActiveTab('backlog')}
+                >
                   <Layers className="w-4 h-4" />
                   <span>Backlog</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
+                <SidebarMenuButton 
+                  className={`flex items-center gap-3 ${activeTab === 'sprints' ? 'text-emerald' : ''}`}
+                  onClick={() => setActiveTab('sprints')}
+                >
                   <Calendar className="w-4 h-4" />
                   <span>Sprints</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
+                <SidebarMenuButton 
+                  className={`flex items-center gap-3 ${activeTab === 'team' ? 'text-emerald' : ''}`}
+                  onClick={() => setActiveTab('team')}
+                >
                   <Users className="w-4 h-4" />
                   <span>Team</span>
                 </SidebarMenuButton>
@@ -47,19 +83,28 @@ const ScrumSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Planning</SidebarGroupLabel>
+          <SidebarGroupLabel>Tools</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton className="flex items-center gap-3">
-                  <FileText className="w-4 h-4" />
-                  <span>User Stories</span>
+                  <Kanban className="w-4 h-4" />
+                  <span>Board</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Acceptance Criteria</span>
+                  <FileText className="w-4 h-4" />
+                  <span>Documents</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  className={`flex items-center gap-3 ${activeTab === 'settings' ? 'text-emerald' : ''}`}
+                  onClick={() => setActiveTab('settings')}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -70,146 +115,321 @@ const ScrumSidebar = () => {
   );
 };
 
-const ScrumDashboard = () => {
+const NewDepartmentModal = ({ onCreated }: { onCreated: () => void }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const department = await createDepartment({ 
+        name, 
+        description: description || null 
+      });
+      
+      if (department) {
+        setName('');
+        setDescription('');
+        setIsOpen(false);
+        onCreated();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-offwhite">
-        <ScrumSidebar />
-        <div className="flex-1 flex flex-col">
-          <header className="bg-white shadow-sm h-[60px] flex items-center justify-between px-6">
-            <div className="flex items-center">
-              <SidebarTrigger />
-              <h1 className="text-xl font-semibold ml-4">Scrum Dashboard</h1>
-            </div>
-            <Button variant="emerald" className="hover-scale" size="sm">
-              <PlusCircle className="w-4 h-4 mr-2" />
-              New Sprint
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="emerald" className="hover-scale" size="sm">
+          <PlusCircle className="w-4 h-4 mr-2" />
+          New Department
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create Department</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="name">Department Name</label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter department name"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="description">Description (Optional)</label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter department description"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+              Cancel
             </Button>
-          </header>
-          <main className="flex-1 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <Card className="hover-scale">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Current Sprint</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="font-medium">Sprint 8</div>
-                      <div className="text-sm text-emerald font-medium">68% Complete</div>
-                    </div>
-                    <Progress value={68} className="h-2" />
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>3 days left</span>
-                      </div>
-                      <span>15/22 story points</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="hover-scale">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Team Velocity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="text-3xl font-bold text-teal">22</div>
-                    <div className="text-sm text-muted-foreground">Story points per sprint</div>
-                  </div>
-                  <div className="mt-4 text-xs text-emerald flex items-center">
-                    <span className="mr-1">▲</span> 3 points from last sprint
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="hover-scale">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Burn Down</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="text-3xl font-bold text-sand">On track</div>
-                    <div className="text-sm text-muted-foreground">2 blockers</div>
-                  </div>
-                  <div className="mt-4">
-                    <div className="h-2 w-full bg-gray-200 rounded-full">
-                      <div className="h-2 bg-gradient-to-r from-emerald to-teal rounded-full" style={{width: '65%'}}></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            <Button type="submit" variant="emerald" disabled={loading}>
+              {loading ? 'Creating...' : 'Create Department'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const DepartmentSelector = ({ departments, currentDepartment, onSelect }: {
+  departments: any[], 
+  currentDepartment: any | null,
+  onSelect: (dept: any) => void
+}) => {
+  if (departments.length === 0) {
+    return <div className="text-sm text-muted-foreground">No departments yet</div>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {departments.map((dept) => (
+        <Button 
+          key={dept.id} 
+          variant={currentDepartment?.id === dept.id ? "emerald" : "outline"}
+          size="sm"
+          onClick={() => onSelect(dept)}
+        >
+          {dept.name}
+        </Button>
+      ))}
+    </div>
+  );
+};
+
+const ScrumDashboardOverview = () => {
+  const { currentDepartment } = useScrum();
+  
+  if (!currentDepartment) {
+    return null;
+  }
+  
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className="bg-white p-6 rounded-lg shadow hover-scale">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Current Sprint</div>
+              <div className="text-2xl font-semibold">Sprint 8</div>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 hover-scale">
-                <CardHeader>
-                  <CardTitle>Sprint Backlog</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {["Implement user story refinement", "Update sprint planning board", "Create velocity charts", "Fix acceptance test failures"].map((task, i) => (
-                      <div key={i} className="flex items-center justify-between bg-offwhite rounded-md p-3">
-                        <span>{task}</span>
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          i === 0 ? "bg-teal/20 text-teal" : 
-                          i === 1 ? "bg-sand/20 text-sand" : 
-                          i === 2 ? "bg-emerald/20 text-emerald" : 
-                          "bg-gray-200 text-gray-500"
-                        }`}>
-                          {i === 0 ? "In Progress" : 
-                           i === 1 ? "High Priority" : 
-                           i === 2 ? "Ready" : 
-                           "Pending"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="hover-scale">
-                <CardHeader>
-                  <CardTitle>Team Health</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">Morale</span>
-                        <span className="text-emerald">Good</span>
-                      </div>
-                      <Progress value={80} className="h-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">Commitment</span>
-                        <span className="text-emerald">Excellent</span>
-                      </div>
-                      <Progress value={95} className="h-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">Dependencies</span>
-                        <span className="text-sand">Needs attention</span>
-                      </div>
-                      <Progress value={60} className="h-2" />
-                    </div>
-                    <div className="pt-2 text-center">
-                      <Button variant="outline" size="sm">
-                        Schedule Retrospective
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="h-12 w-12 rounded-full bg-emerald/10 flex items-center justify-center">
+              <Calendar className="h-6 w-6 text-emerald" />
             </div>
-          </main>
-        </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-1 text-emerald">
+              <CheckCircle className="h-4 w-4" />
+              <span>68% Complete</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>3 days left</span>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="bg-white p-6 rounded-lg shadow hover-scale">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Team Velocity</div>
+              <div className="text-2xl font-semibold">22 pts</div>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-teal/10 flex items-center justify-center">
+              <BarChart3 className="h-6 w-6 text-teal" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-1 text-emerald">
+              <span className="mr-1">▲</span> 
+              <span>3 points from last sprint</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <span>Avg: 19 pts</span>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="bg-white p-6 rounded-lg shadow hover-scale">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm text-muted-foreground mb-1">Team Members</div>
+              <div className="text-2xl font-semibold">8 Members</div>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-sand/10 flex items-center justify-center">
+              <Users className="h-6 w-6 text-sand" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-1 text-emerald">
+              <span className="mr-1">✓</span> 
+              <span>2 Admins</span>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <span>6 Contributors</span>
+            </div>
+          </div>
+        </Card>
       </div>
-    </SidebarProvider>
+      
+      <DepartmentManagement />
+      
+      <Card className="hover-scale">
+        <div className="p-6">
+          <h2 className="text-lg font-medium mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
+              <Layers className="h-5 w-5 mb-2" />
+              <span>View Backlog</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
+              <Calendar className="h-5 w-5 mb-2" />
+              <span>Create Sprint</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
+              <Users className="h-5 w-5 mb-2" />
+              <span>Manage Team</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center">
+              <Kanban className="h-5 w-5 mb-2" />
+              <span>Board View</span>
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const DashboardContent = () => {
+  const { user } = useAuth();
+  const { 
+    departments, 
+    currentDepartment, 
+    setCurrentDepartment, 
+    isAdmin,
+    refreshDepartments
+  } = useScrum();
+  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+
+  // Map tab name to component
+  const renderTabContent = () => {
+    if (!currentDepartment) return null;
+    
+    switch (activeTab) {
+      case "dashboard":
+        return <ScrumDashboardOverview />;
+      case "backlog":
+        return <TaskBoard />;
+      case "sprints":
+        return <SprintManagement />;
+      case "team":
+        return <TeamManagement />;
+      case "settings":
+        return (
+          <Card className="p-6">
+            <h2 className="text-lg font-medium mb-4">Department Settings</h2>
+            <p className="text-muted-foreground">Settings options will be available here.</p>
+          </Card>
+        );
+      default:
+        return <ScrumDashboardOverview />;
+    }
+  };
+
+  return (
+    <div className="flex-1 flex flex-col">
+      <header className="bg-white shadow-sm h-[60px] flex items-center justify-between px-6">
+        <div className="flex items-center">
+          <SidebarTrigger />
+          <h1 className="text-xl font-semibold ml-4">Scrum Dashboard</h1>
+        </div>
+        <div className="flex items-center space-x-4">
+          {user && isAdmin && (
+            <NewDepartmentModal onCreated={refreshDepartments} />
+          )}
+          <Button variant="outline" size="sm">
+            <Settings className="w-4 h-4 mr-2" />
+            Settings
+          </Button>
+        </div>
+      </header>
+      <main className="flex-1 p-6 bg-offwhite">
+        {user ? (
+          <>
+            <div className="mb-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 className="text-lg font-semibold">Your Departments</h2>
+                <DepartmentSelector 
+                  departments={departments} 
+                  currentDepartment={currentDepartment} 
+                  onSelect={setCurrentDepartment} 
+                />
+              </div>
+
+              {currentDepartment ? (
+                <>
+                  {renderTabContent()}
+                </>
+              ) : (
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                  <Briefcase className="w-12 h-12 mx-auto mb-4 text-emerald opacity-70" />
+                  <h3 className="text-lg font-medium mb-2">No Department Selected</h3>
+                  <p className="text-muted-foreground mb-6">
+                    {departments.length > 0 
+                      ? "Please select a department to view its dashboard."
+                      : "You don't have any departments yet. Create your first department to get started."}
+                  </p>
+                  {departments.length === 0 && (
+                    <NewDepartmentModal onCreated={refreshDepartments} />
+                  )}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <Users className="w-12 h-12 mx-auto mb-4 text-emerald opacity-70" />
+            <h3 className="text-lg font-medium mb-2">Authentication Required</h3>
+            <p className="text-muted-foreground mb-6">
+              Please sign in to access the Scrum dashboard.
+            </p>
+            <Button variant="emerald">Sign In</Button>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+const ScrumDashboard = () => {
+  const [activeTab, setActiveTab] = useState<TabType>("dashboard");
+  
+  return (
+    <ScrumProvider>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-offwhite">
+          <ScrumSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <DashboardContent />
+        </div>
+      </SidebarProvider>
+    </ScrumProvider>
   );
 };
 
