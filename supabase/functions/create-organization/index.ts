@@ -63,6 +63,15 @@ serve(async (req) => {
       );
     }
 
+    // Create an admin client that bypasses RLS using service role
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL") || '',
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '',
+      {
+        // Don't include the user's JWT here so we use the service role's full permissions
+      }
+    );
+
     // Parse the request body
     const { name, description, logo_url }: CreateOrgRequest = await req.json();
 
@@ -76,8 +85,8 @@ serve(async (req) => {
       );
     }
 
-    // Create the organization
-    const { data: organization, error: orgError } = await supabaseClient
+    // Create the organization using the admin client (bypassing RLS)
+    const { data: organization, error: orgError } = await adminClient
       .from("organizations")
       .insert({
         name,
@@ -90,7 +99,7 @@ serve(async (req) => {
     if (orgError) {
       console.error("Error creating organization:", orgError);
       return new Response(
-        JSON.stringify({ error: "Failed to create organization" }),
+        JSON.stringify({ error: "Failed to create organization", details: orgError }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 500,
@@ -98,8 +107,8 @@ serve(async (req) => {
       );
     }
 
-    // Add the user as an admin of the organization
-    const { error: memberError } = await supabaseClient
+    // Add the user as an admin of the organization (also using admin client)
+    const { error: memberError } = await adminClient
       .from("organization_members")
       .insert({
         organization_id: organization.id,
@@ -112,6 +121,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           error: "Organization created but failed to add you as admin",
+          details: memberError,
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
