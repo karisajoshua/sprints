@@ -1,7 +1,7 @@
 
 // Using relative imports without ESM that will work in both Deno and Node environments
 import { serve } from "../http/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -36,8 +36,8 @@ serve(async (req) => {
     // Create a Supabase client with the user's JWT
     const supabaseClient = createClient(
       // These will be available within the Supabase Edge Function environment
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+      Deno.env.get("SUPABASE_URL") || '',
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '',
       {
         global: {
           headers: {

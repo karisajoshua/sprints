@@ -1,8 +1,8 @@
 
 // Using relative imports without ESM that will work in both Deno and Node environments
 import { serve } from "../http/server";
-import { createClient } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from "uuid";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { v4 as uuidv4 } from "https://esm.sh/uuid@9.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,8 +37,8 @@ serve(async (req) => {
     // Create a Supabase client with the user's JWT
     const supabaseClient = createClient(
       // These will be available within the Supabase Edge Function environment
-      process.env.SUPABASE_URL || '',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+      Deno.env.get("SUPABASE_URL") || '',
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '',
       {
         global: {
           headers: {
@@ -131,7 +131,7 @@ serve(async (req) => {
         invitation: { 
           ...invitation,
           // Include the inviteUrl that would be sent in the email
-          inviteUrl: `${process.env.PUBLIC_URL || ''}/join?token=${token}` 
+          inviteUrl: `${Deno.env.get("PUBLIC_URL") || ''}/join?token=${token}` 
         } 
       }),
       {
