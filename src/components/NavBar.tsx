@@ -24,7 +24,7 @@ const NavBar = () => {
   }, []);
 
   const handleSignUp = () => {
-    navigate('/dashboard');
+    navigate('/setup');
   };
 
   return (

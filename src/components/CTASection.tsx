@@ -22,7 +22,7 @@ const CTASection = () => {
           variant="sand" 
           size="xl" 
           className="font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 animate-pulse-subtle"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/setup')}
         >
           Sign Up — It's Free
         </Button>

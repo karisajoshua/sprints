@@ -31,7 +31,7 @@ const HeroSection = () => {
               variant="emerald" 
               size="xl" 
               className="mt-2 glow-button animate-pulse-subtle hover:scale-105 transition-transform"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/setup')}
             >
               Sign Up — It's Free
             </Button>
