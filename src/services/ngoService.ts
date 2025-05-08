@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { 
@@ -13,22 +12,39 @@ import {
 
 // Organizations
 export const createOrganization = async (organization: Pick<Organization, 'name'> & Partial<Omit<Organization, 'name'>>): Promise<Organization> => {
-  const { data, error } = await supabase
-    .from('organizations')
-    .insert(organization)
-    .select('*')
-    .single();
+  // Get the current session for the auth header
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    // Call the Edge Function with proper authentication
+    const { data, error } = await supabase.functions.invoke('create-organization', {
+      body: organization,
+      headers: {
+        Authorization: `Bearer ${session.access_token}`
+      }
+    });
 
-  if (error) {
+    if (error) {
+      throw error;
+    }
+
+    if (!data || !data.organization) {
+      throw new Error("Failed to create organization: No data returned");
+    }
+
+    return data.organization;
+  } catch (error: any) {
     toast({
       title: "Error creating organization",
-      description: error.message,
+      description: error.message || "An error occurred while creating the organization",
       variant: "destructive",
     });
     throw error;
   }
-
-  return data;
 };
 
 export const getUserOrganizations = async (): Promise<Organization[]> => {
