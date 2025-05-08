@@ -1,6 +1,6 @@
 
-// Using relative imports without ESM that will work in both Deno and Node environments
-import { serve } from "../http/server";
+// Using relative imports that will work in the Supabase Edge Function environment
+import { serve } from "../http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
