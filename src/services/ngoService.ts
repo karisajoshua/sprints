@@ -290,3 +290,28 @@ export const getProjectStatusSummary = async (organizationId: string): Promise<P
 
   return data;
 };
+
+// Impact Metrics
+export const getImpactMetrics = async (organizationId: string): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('impact_metrics')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error fetching impact metrics",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
+
+    return data || [];
+  } catch (error: any) {
+    console.error("Error in getImpactMetrics:", error);
+    return [];
+  }
+};
