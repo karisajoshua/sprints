@@ -1,10 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Users, Calendar, LayoutDashboard, ArrowRight } from "lucide-react";
+import { CheckCircle, Users, Calendar, LayoutDashboard, ArrowRight, Settings, FileText, Database, Cog } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 // Team types
 export type TeamType = "scrum" | "startup" | "ngo";
@@ -52,12 +54,41 @@ const teamQuestions = {
   ]
 };
 
+// Loading steps for the setup process
+const loadingSteps = [
+  { 
+    progress: 25, 
+    message: "Creating your workspace", 
+    icon: <Settings className="animate-spin h-5 w-5 text-emerald" /> 
+  },
+  { 
+    progress: 50, 
+    message: "Setting up templates", 
+    icon: <FileText className="animate-pulse h-5 w-5 text-emerald" /> 
+  },
+  { 
+    progress: 75, 
+    message: "Configuring preferences", 
+    icon: <Cog className="animate-spin h-5 w-5 text-emerald" /> 
+  },
+  { 
+    progress: 100, 
+    message: "Preparing dashboard", 
+    icon: <Database className="animate-pulse h-5 w-5 text-emerald" /> 
+  }
+];
+
 const SetupWizard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<WizardStep>("teamType");
   const [teamType, setTeamType] = useState<TeamType | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  
+  // Loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [currentLoadingStep, setCurrentLoadingStep] = useState(0);
   
   const handleTeamSelect = (type: TeamType) => {
     setTeamType(type);
@@ -67,8 +98,50 @@ const SetupWizard = () => {
   const handleAnswerSelect = (questionId: string, answer: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
+
+  // Setup loading process
+  useEffect(() => {
+    if (isLoading) {
+      const duration = 40000; // 40 seconds
+      const interval = 100; // Update every 100ms
+      const steps = duration / interval;
+      const incrementPerStep = 100 / steps;
+
+      const timer = setInterval(() => {
+        setLoadingProgress(prev => {
+          const newProgress = Math.min(prev + incrementPerStep, 100);
+          
+          // Update the current loading step based on progress
+          if (newProgress >= 25 && currentLoadingStep < 1) {
+            setCurrentLoadingStep(1);
+          } else if (newProgress >= 50 && currentLoadingStep < 2) {
+            setCurrentLoadingStep(2);
+          } else if (newProgress >= 75 && currentLoadingStep < 3) {
+            setCurrentLoadingStep(3);
+          }
+          
+          // When complete, navigate to dashboard
+          if (newProgress >= 100) {
+            clearInterval(timer);
+            setTimeout(() => {
+              completeSetup();
+            }, 1000); // Small delay to ensure animations complete
+          }
+          
+          return newProgress;
+        });
+      }, interval);
+
+      return () => clearInterval(timer);
+    }
+  }, [isLoading, currentLoadingStep]);
   
   const handleComplete = () => {
+    // Start loading process instead of navigating directly
+    setIsLoading(true);
+  };
+  
+  const completeSetup = () => {
     if (!teamType) return;
     
     // Store user preferences in localStorage
@@ -272,6 +345,53 @@ const SetupWizard = () => {
           )}
         </CardFooter>
       </Card>
+
+      {/* Loading Dialog */}
+      <Dialog open={isLoading} onOpenChange={(open) => setIsLoading(open)}>
+        <DialogContent className="sm:max-w-md" hideCloseButton>
+          <div className="space-y-6 py-2">
+            <h3 className="text-xl font-semibold text-center">Setting Up Your Dashboard</h3>
+            
+            <div className="space-y-2">
+              <Progress value={loadingProgress} className="h-2 bg-gray-100" />
+              <p className="text-sm text-gray-500 text-right">{Math.round(loadingProgress)}%</p>
+            </div>
+            
+            <div className="space-y-4">
+              {loadingSteps.map((step, index) => {
+                const isActive = currentLoadingStep >= index;
+                const isCompleted = loadingProgress > step.progress;
+                
+                return (
+                  <div 
+                    key={index}
+                    className={`flex items-center gap-3 p-3 rounded-md transition-all duration-300 ${
+                      isActive ? "bg-emerald/5 border border-emerald/20" : "opacity-50"
+                    }`}
+                  >
+                    <div className="flex-shrink-0">
+                      {isCompleted ? (
+                        <CheckCircle className="h-5 w-5 text-emerald" />
+                      ) : (
+                        isActive ? step.icon : <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                    </div>
+                    <div>
+                      <p className={`font-medium ${isActive ? "text-emerald" : "text-gray-500"}`}>
+                        {step.message}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <p className="text-center text-sm text-muted-foreground animate-pulse">
+              This may take a moment...
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
