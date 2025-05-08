@@ -101,6 +101,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: "Account created",
         description: "Please check your email to confirm your account.",
       });
+      
+      // Navigate to the thank you page after successful signup
+      navigate("/auth/thankyou");
     } catch (error: any) {
       toast({
         title: "Sign up failed",

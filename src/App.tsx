@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 // Import Auth components
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
+import ThankYou from "./pages/auth/ThankYou";
 import { AuthProvider } from "./hooks/useAuth";
 import RequireAuth from "./components/ngo/RequireAuth";
 import { OrganizationProvider } from "./components/ngo/OrganizationContext";
@@ -50,6 +51,7 @@ const App = () => {
                   {/* Auth Routes */}
                   <Route path="/auth/signin" element={<SignIn />} />
                   <Route path="/auth/signup" element={<SignUp />} />
+                  <Route path="/auth/thankyou" element={<ThankYou />} />
                   
                   {/* Protected NGO Routes */}
                   <Route element={<RequireAuth />}>
