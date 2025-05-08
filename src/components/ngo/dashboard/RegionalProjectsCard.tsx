@@ -23,10 +23,16 @@ const RegionalProjectsCard = () => {
   const displayProjects = projects ? projects.slice(0, 4) : [];
   
   // Function to get relative time string
-  const getRelativeTimeString = (dateString) => {
+  const getRelativeTimeString = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    // Ensure date is valid before calculating difference
+    if (isNaN(date.getTime())) return 'Unknown date';
+    
+    // Calculate difference in milliseconds and convert to days
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
@@ -36,7 +42,7 @@ const RegionalProjectsCard = () => {
   };
   
   // Get status style class based on project status
-  const getStatusClass = (status) => {
+  const getStatusClass = (status: string) => {
     switch (status) {
       case "On Track": return "bg-emerald/20 text-emerald";
       case "At Risk": return "bg-sand/20 text-sand";
