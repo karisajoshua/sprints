@@ -1,6 +1,6 @@
 
 // Using relative imports without ESM that will work in both Deno and Node environments
-import { serve } from "http/server";
+import { serve } from "../http/server";
 import { createClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -131,7 +131,7 @@ serve(async (req) => {
         invitation: { 
           ...invitation,
           // Include the inviteUrl that would be sent in the email
-          inviteUrl: `${process.env.PUBLIC_URL || window.location.origin}/join?token=${token}` 
+          inviteUrl: `${process.env.PUBLIC_URL || ''}/join?token=${token}` 
         } 
       }),
       {
