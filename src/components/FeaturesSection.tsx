@@ -13,14 +13,20 @@ const Feature = ({
   description: string;
   delay?: number;
 }) => (
-  <div className={`flex gap-5 slideUp`} style={{ animationDelay: `${delay}ms` }}>
+  <div 
+    className={`flex gap-5 slideUp hover:transform hover:translate-y-[-5px] transition-transform duration-300`} 
+    style={{ animationDelay: `${delay}ms` }}
+  >
     <div className="flex-shrink-0 mt-1">
-      <div className="p-3 rounded-lg bg-emerald/10 text-emerald">
+      <div className="p-3 rounded-lg bg-gradient-to-br from-emerald/30 to-teal/10 text-emerald shadow-sm hover:shadow-md transition-shadow">
         <Icon className="w-6 h-6" />
       </div>
     </div>
     <div>
-      <h3 className="text-lg font-bold mb-2">{title}</h3>
+      <h3 className="text-lg font-bold mb-2 relative">
+        {title}
+        <span className="absolute -bottom-1 left-0 w-10 h-1 bg-sand/30 rounded-full"></span>
+      </h3>
       <p className="text-charcoal/80">{description}</p>
     </div>
   </div>
@@ -28,10 +34,18 @@ const Feature = ({
 
 const FeaturesSection = () => {
   return (
-    <section id="features" className="py-20 px-4 md:px-6 bg-white">
+    <section id="features" className="py-20 px-4 md:px-6 bg-gradient-to-b from-white to-offwhite relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-20 left-0 w-40 h-40 bg-emerald/5 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute bottom-20 right-0 w-60 h-60 bg-sand/5 rounded-full blur-3xl -z-10"></div>
+      
       <div className="container mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16 fadeIn">
-          <h2 className="mb-4">All-in-One Workspace for Agile Success</h2>
+          <h2 className="mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald to-teal">
+              All-in-One Workspace
+            </span> for Agile Success
+          </h2>
           <p className="text-lg text-charcoal/80">
             Everything your team needs to plan, track, and deliver projects on time.
           </p>

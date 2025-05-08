@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +22,10 @@ const NavBar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleSignUp = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <header
@@ -40,23 +46,28 @@ const NavBar = () => {
         <nav className="hidden md:flex items-center gap-8">
           <a
             href="#features"
-            className="text-charcoal hover:text-emerald font-medium transition-colors"
+            className="text-charcoal hover:text-emerald font-medium transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-emerald/30 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
           >
             Features
           </a>
           <a
             href="#how-it-works"
-            className="text-charcoal hover:text-emerald font-medium transition-colors"
+            className="text-charcoal hover:text-emerald font-medium transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-emerald/30 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
           >
             How It Works
           </a>
           <a
             href="#use-cases"
-            className="text-charcoal hover:text-emerald font-medium transition-colors"
+            className="text-charcoal hover:text-emerald font-medium transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-emerald/30 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
           >
             Use Cases
           </a>
-          <Button variant="emerald" size="default" className="ml-2">
+          <Button 
+            variant="emerald" 
+            size="default" 
+            className="ml-2 hover:scale-105 transition-transform"
+            onClick={handleSignUp}
+          >
             Sign Up — It's Free
           </Button>
         </nav>
@@ -125,7 +136,12 @@ const NavBar = () => {
           >
             Use Cases
           </a>
-          <Button variant="emerald" size="default" className="mt-2 w-full">
+          <Button 
+            variant="emerald" 
+            size="default" 
+            className="mt-2 w-full"
+            onClick={handleSignUp}
+          >
             Sign Up — It's Free
           </Button>
         </nav>

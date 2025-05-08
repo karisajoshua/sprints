@@ -151,3 +151,24 @@
 .delay-500 {
   animation-delay: 500ms;
 }
+
+.delay-600 {
+  animation-delay: 600ms;
+}
+
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.glow-button {
+  @apply relative;
+}
+
+.glow-button::before {
+  content: '';
+  @apply absolute inset-0 rounded-md -z-10 bg-emerald/20 blur-md opacity-0 transition-opacity duration-300;
+}
+
+.glow-button:hover::before {
+  @apply opacity-100;
+}
