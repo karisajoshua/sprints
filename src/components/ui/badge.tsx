@@ -16,6 +16,15 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        magenta: "border-transparent bg-magenta text-white hover:bg-magenta/80",
+        purple: "border-transparent bg-purple text-white hover:bg-purple/80",
+        lavender: "border-transparent bg-lavender text-white hover:bg-lavender/80",
+        subtle: "border-transparent bg-accent/20 text-accent hover:bg-accent/30",
+        gradient: "border-transparent bg-gradient-lavender text-white",
+        todo: "border-transparent bg-muted text-muted-foreground",
+        progress: "border-transparent bg-lavender/20 text-lavender",
+        review: "border-transparent bg-magenta/20 text-magenta",
+        done: "border-transparent bg-purple/20 text-purple",
       },
     },
     defaultVariants: {

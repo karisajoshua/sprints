@@ -174,47 +174,58 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case 'High':
-        return <Badge variant="destructive" className="flex items-center gap-1"><ArrowUp className="w-3 h-3" /> High</Badge>;
+        return <Badge variant="magenta" className="flex items-center gap-1"><ArrowUp className="w-3 h-3" /> High</Badge>;
       case 'Medium':
-        return <Badge variant="default" className="flex items-center gap-1"><ArrowRight className="w-3 h-3" /> Medium</Badge>;
+        return <Badge variant="lavender" className="flex items-center gap-1"><ArrowRight className="w-3 h-3" /> Medium</Badge>;
       case 'Low':
-        return <Badge variant="outline" className="flex items-center gap-1"><ArrowDown className="w-3 h-3" /> Low</Badge>;
+        return <Badge variant="subtle" className="flex items-center gap-1"><ArrowDown className="w-3 h-3" /> Low</Badge>;
       default:
-        return <Badge variant="secondary">{priority}</Badge>;
+        return <Badge variant="outline">{priority}</Badge>;
+    }
+  };
+  
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'To Do':
+        return <Badge variant="todo">To Do</Badge>;
+      case 'In Progress':
+        return <Badge variant="progress">In Progress</Badge>;
+      case 'Review':
+        return <Badge variant="review">Review</Badge>;
+      case 'Done':
+        return <Badge variant="done">Done</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
   
   if (loading) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lavender"></div>
+      </div>
     );
   }
   
   return (
     <>
-      <Card>
+      <Card className="border border-border shadow-sm bg-white/80 backdrop-blur-sm">
         <CardHeader className="pb-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">
-            {sprintId ? 'Sprint Tasks' : 'Backlog'}
+          <CardTitle className="text-lg gradient-text">
+            {sprintId ? 'Sprint Tasks' : 'Task Board'}
           </CardTitle>
-          <Button variant="emerald" size="sm" onClick={() => openAddTask()}>
+          <Button variant="gradient" size="sm" onClick={() => openAddTask()} className="hover-scale">
             <Plus className="w-4 h-4 mr-2" />
             Add Task
           </Button>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col lg:flex-row gap-4 overflow-x-auto pb-4">
+        <CardContent className="overflow-x-auto">
+          <div className="flex gap-4 pb-4 min-h-[70vh]">
             {columns.map(column => (
-              <div key={column.id} className="min-w-[280px] flex-1">
-                <div className="bg-accent/50 rounded-md p-3 mb-3 flex items-center justify-between">
+              <div key={column.id} className="kanban-column">
+                <div className="bg-gradient-to-r from-lavender/10 to-magenta/10 rounded-md p-3 mb-3 flex items-center justify-between">
                   <h3 className="font-medium">{column.name}</h3>
-                  <span className="text-xs text-muted-foreground px-2 py-1 bg-background rounded-full">
+                  <span className="text-xs bg-white px-2 py-1 rounded-full font-medium">
                     {tasks.filter(t => t.status === column.name).length}
                   </span>
                 </div>
@@ -225,7 +236,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                     .map(task => (
                       <div 
                         key={task.id} 
-                        className="bg-white p-3 rounded-md shadow border cursor-pointer hover:shadow-md"
+                        className="task-card"
                         onClick={() => setViewingTask(task)}
                       >
                         <h4 className="font-medium mb-2">{task.title}</h4>
@@ -249,9 +260,9 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                         <div className="flex justify-between items-center">
                           {task.assignee ? (
                             <div className="flex items-center gap-1">
-                              <Avatar className="h-5 w-5">
+                              <Avatar className="h-5 w-5 border border-lavender/20">
                                 <AvatarImage src={task.assignee.avatar_url || ""} alt={task.assignee.full_name || ""} />
-                                <AvatarFallback>
+                                <AvatarFallback className="bg-gradient-lavender text-white text-xs">
                                   {(task.assignee.full_name || task.assignee.email).substring(0, 1)}
                                 </AvatarFallback>
                               </Avatar>
@@ -275,7 +286,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                     
                   {tasks.filter(t => t.status === column.name).length === 0 && (
                     <div 
-                      className="border border-dashed border-muted-foreground/20 rounded-md p-6 flex flex-col items-center justify-center text-center min-h-[100px]"
+                      className="border border-dashed border-muted-foreground/20 rounded-md p-6 flex flex-col items-center justify-center text-center min-h-[100px] hover:border-lavender/40 hover:bg-lavender/5 transition-colors duration-300 cursor-pointer"
                       onClick={() => openAddTask(column.name)}
                     >
                       <Plus className="w-5 h-5 text-muted-foreground/50 mb-2" />
@@ -295,7 +306,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
       <Dialog open={isAddingTask} onOpenChange={setIsAddingTask}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>Add New Task</DialogTitle>
+            <DialogTitle className="gradient-text">Add New Task</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateTask} className="space-y-4 pt-4">
             <div className="space-y-2">
@@ -305,6 +316,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 onChange={(e) => setTaskTitle(e.target.value)}
                 placeholder="Enter task title"
                 required
+                className="border-lavender/20 focus-visible:border-lavender"
               />
             </div>
             
@@ -315,6 +327,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 onChange={(e) => setTaskDescription(e.target.value)}
                 placeholder="Enter task description"
                 rows={4}
+                className="border-lavender/20 focus-visible:border-lavender"
               />
             </div>
             
@@ -322,7 +335,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status</label>
                 <Select value={taskStatus} onValueChange={setTaskStatus} required>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -338,7 +351,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Priority</label>
                 <Select value={taskPriority} onValueChange={setTaskPriority}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
@@ -352,7 +365,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Assignee</label>
                 <Select value={taskAssignee} onValueChange={setTaskAssignee}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
@@ -375,6 +388,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                   placeholder="Enter story points"
                   min="0"
                   max="100"
+                  className="border-lavender/20 focus-visible:border-lavender"
                 />
               </div>
             </div>
@@ -389,8 +403,9 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               </Button>
               <Button 
                 type="submit" 
-                variant="emerald"
+                variant="gradient"
                 disabled={savingTask || !taskTitle || !taskStatus}
+                className="hover-scale"
               >
                 {savingTask ? "Creating..." : "Create Task"}
               </Button>
@@ -403,7 +418,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
       <Dialog open={isEditingTask} onOpenChange={setIsEditingTask}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>Edit Task</DialogTitle>
+            <DialogTitle className="gradient-text">Edit Task</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateTask} className="space-y-4 pt-4">
             <div className="space-y-2">
@@ -413,6 +428,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 onChange={(e) => setTaskTitle(e.target.value)}
                 placeholder="Enter task title"
                 required
+                className="border-lavender/20 focus-visible:border-lavender"
               />
             </div>
             
@@ -423,6 +439,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 onChange={(e) => setTaskDescription(e.target.value)}
                 placeholder="Enter task description"
                 rows={4}
+                className="border-lavender/20 focus-visible:border-lavender"
               />
             </div>
             
@@ -430,7 +447,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status</label>
                 <Select value={taskStatus} onValueChange={setTaskStatus} required>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -446,7 +463,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Priority</label>
                 <Select value={taskPriority} onValueChange={setTaskPriority}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
@@ -460,7 +477,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Assignee</label>
                 <Select value={taskAssignee} onValueChange={setTaskAssignee}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-lavender/20 focus-visible:border-lavender">
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
@@ -483,6 +500,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                   placeholder="Enter story points"
                   min="0"
                   max="100"
+                  className="border-lavender/20 focus-visible:border-lavender"
                 />
               </div>
             </div>
@@ -497,8 +515,9 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               </Button>
               <Button 
                 type="submit" 
-                variant="emerald"
+                variant="gradient"
                 disabled={savingTask || !taskTitle || !taskStatus}
+                className="hover-scale"
               >
                 {savingTask ? "Saving..." : "Save Changes"}
               </Button>
@@ -516,9 +535,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 <h2 className="text-xl font-semibold mb-1">{viewingTask.title}</h2>
                 <div className="flex items-center gap-2">
                   {getPriorityBadge(viewingTask.priority)}
-                  <span className="text-xs bg-accent px-2 py-1 rounded-full">
-                    {viewingTask.status}
-                  </span>
+                  {getStatusBadge(viewingTask.status)}
                   {viewingTask.story_points !== null && (
                     <span className="text-xs bg-muted px-2 py-1 rounded-full">
                       {viewingTask.story_points} points
@@ -536,6 +553,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                       setViewingTask(null);
                       openEditTask(viewingTask);
                     }}
+                    className="hover:border-lavender/50 hover:text-lavender"
                   >
                     Edit
                   </Button>
@@ -559,7 +577,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
               {viewingTask.description && (
                 <div className="space-y-2">
                   <h3 className="text-sm font-medium">Description</h3>
-                  <div className="bg-accent/50 p-3 rounded text-sm">
+                  <div className="bg-lavender/5 p-4 rounded-lg text-sm border border-lavender/20">
                     {viewingTask.description}
                   </div>
                 </div>
@@ -570,9 +588,9 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                   <h3 className="text-sm font-medium mb-1">Assignee</h3>
                   {viewingTask.assignee ? (
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
+                      <Avatar className="h-8 w-8 border border-lavender/30">
                         <AvatarImage src={viewingTask.assignee.avatar_url || ""} alt={viewingTask.assignee.full_name || ""} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-gradient-lavender text-white">
                           {(viewingTask.assignee.full_name || viewingTask.assignee.email).substring(0, 1)}
                         </AvatarFallback>
                       </Avatar>
@@ -587,9 +605,9 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                   <h3 className="text-sm font-medium mb-1">Reporter</h3>
                   {viewingTask.reporter ? (
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
+                      <Avatar className="h-8 w-8 border border-lavender/30">
                         <AvatarImage src={viewingTask.reporter.avatar_url || ""} alt={viewingTask.reporter.full_name || ""} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-gradient-purple text-white">
                           {(viewingTask.reporter.full_name || viewingTask.reporter.email).substring(0, 1)}
                         </AvatarFallback>
                       </Avatar>
@@ -603,7 +621,7 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 <div>
                   <h3 className="text-sm font-medium mb-1">Created</h3>
                   <div className="flex items-center gap-1 text-sm">
-                    <Calendar className="w-3 h-3" />
+                    <Calendar className="w-4 h-4 text-magenta" />
                     <span>{new Date(viewingTask.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -611,22 +629,23 @@ export const TaskBoard = ({ sprintId }: { sprintId?: string }) => {
                 <div>
                   <h3 className="text-sm font-medium mb-1">Updated</h3>
                   <div className="flex items-center gap-1 text-sm">
-                    <Clock className="w-3 h-3" />
+                    <Clock className="w-4 h-4 text-purple" />
                     <span>{new Date(viewingTask.updated_at).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
               
               <div className="pt-4">
-                <h3 className="text-sm font-medium mb-3">Move Task</h3>
+                <h3 className="text-sm font-medium mb-3 gradient-text">Move Task</h3>
                 <div className="flex flex-wrap gap-2">
                   {columns.map(column => (
                     <Button
                       key={column.id}
-                      variant={viewingTask.status === column.name ? "emerald" : "outline"}
+                      variant={viewingTask.status === column.name ? "gradient" : "outline"}
                       size="sm"
                       disabled={viewingTask.status === column.name}
                       onClick={() => handleMoveTask(viewingTask, column.name)}
+                      className={viewingTask.status !== column.name ? "hover:border-lavender/50 hover:text-lavender" : ""}
                     >
                       {column.name}
                     </Button>

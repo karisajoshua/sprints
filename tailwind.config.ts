@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -63,11 +62,15 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// OneMap Africa custom colors
+				// New color palette
+				"magenta": "#D93EBE",
+				"purple": "#8F03C2",
+				"lavender": "#7C4DFC",
+				"charcoal": "#2D2D2D",
+				"offwhite": "#F9FAFB",
+				// Keep the original OneMap Africa colors
 				"emerald": "#3D7D5B",
 				"sand": "#F4A261",
-				"offwhite": "#F9FAFB",
-				"charcoal": "#2D2D2D",
 				"teal": "#2A9D8F",
 			},
 			borderRadius: {
@@ -111,6 +114,20 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' }
+				},
+				'gradient-x': {
+					'0%, 100%': {
+						'background-size': '200% 200%',
+						'background-position': 'left center'
+					},
+					'50%': {
+						'background-size': '200% 200%',
+						'background-position': 'right center'
+					}
+				},
+				'bounce-subtle': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
 				}
 			},
 			animation: {
@@ -120,11 +137,19 @@ export default {
 				'slide-up': 'slide-up 0.5s ease-out forwards',
 				'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
 				'pulse-slow': 'pulse-slow 5s ease-in-out infinite',
-				'float': 'float 5s ease-in-out infinite'
+				'float': 'float 5s ease-in-out infinite',
+				'gradient-x': 'gradient-x 3s ease-in-out infinite',
+				'bounce-subtle': 'bounce-subtle 3s ease-in-out infinite'
 			},
 			fontFamily: {
 				'poppins': ['Poppins', 'sans-serif'],
 				'inter': ['Inter', 'sans-serif'],
+			},
+			backgroundImage: {
+				'gradient-purple': 'linear-gradient(90deg, #8F03C2 0%, #D93EBE 100%)',
+				'gradient-lavender': 'linear-gradient(90deg, #7C4DFC 0%, #D93EBE 100%)',
+				'gradient-dark': 'linear-gradient(90deg, #2D2D2D 0%, #8F03C2 100%)',
+				'gradient-light': 'linear-gradient(90deg, #F9FAFB 0%, #7C4DFC 10%)',
 			}
 		}
 	},
