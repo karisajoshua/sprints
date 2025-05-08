@@ -7,6 +7,7 @@ import DashboardCards from "@/components/ngo/dashboard/DashboardCards";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useOrganization } from "@/components/ngo/OrganizationContext";
+import { toast } from "@/hooks/use-toast";
 
 const NGODashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -16,11 +17,25 @@ const NGODashboard = () => {
   // Check if user has an organization, redirect if not
   useEffect(() => {
     if (!authLoading && !orgLoading) {
+      // Check if user just came from setup wizard
+      const isFromSetup = sessionStorage.getItem("fromSetupWizard") === "true";
+      
       if (user && organizations.length === 0) {
         // User has no organizations, redirect to create organization page
-        // For now we'll just redirect to the sign-in page as a placeholder
-        // In a real app, you'd create an organization creation flow
-        navigate('/auth/signin');
+        toast({
+          title: "Create Your Organization",
+          description: "Let's create your first organization to get started.",
+        });
+        
+        // For now we'll redirect to the dashboard, in a real app you'd
+        // redirect to a proper organization creation page
+        navigate('/dashboard');
+        
+        // Clear the setup wizard flag
+        sessionStorage.removeItem("fromSetupWizard");
+      } else if (isFromSetup) {
+        // Clear the setup wizard flag
+        sessionStorage.removeItem("fromSetupWizard");
       }
     }
   }, [user, organizations, authLoading, orgLoading, navigate]);

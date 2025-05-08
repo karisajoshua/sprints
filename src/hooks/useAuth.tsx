@@ -69,6 +69,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: `Welcome back, ${email}!`,
       });
 
+      // Set session flag to indicate this is a fresh login
+      sessionStorage.setItem("fromSignIn", "true");
+      
       navigate("/setup");
     } catch (error: any) {
       toast({
