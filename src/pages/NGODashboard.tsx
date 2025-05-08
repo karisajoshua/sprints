@@ -5,6 +5,8 @@ import { LayoutDashboard, CheckCircle, Calendar, Users, Settings, PlusCircle, Gl
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Link, useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const NGOSidebar = () => {
   return (
@@ -20,27 +22,35 @@ const NGOSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span>Dashboard</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo">
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Dashboard</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <Globe className="w-4 h-4" />
-                  <span>Projects</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/projects">
+                    <Globe className="w-4 h-4" />
+                    <span>Projects</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <Map className="w-4 h-4" />
-                  <span>Regions</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/regions">
+                    <Map className="w-4 h-4" />
+                    <span>Regions</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <BarChart3 className="w-4 h-4" />
-                  <span>Impact</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/impact">
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Impact</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -51,21 +61,27 @@ const NGOSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <Users className="w-4 h-4" />
-                  <span>Teams</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/teams">
+                    <Users className="w-4 h-4" />
+                    <span>Teams</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <Building className="w-4 h-4" />
-                  <span>Partners</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/partners">
+                    <Building className="w-4 h-4" />
+                    <span>Partners</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="flex items-center gap-3">
-                  <HeartHandshake className="w-4 h-4" />
-                  <span>Stakeholders</span>
+                <SidebarMenuButton className="flex items-center gap-3" asChild>
+                  <Link to="/dashboard/ngo/stakeholders">
+                    <HeartHandshake className="w-4 h-4" />
+                    <span>Stakeholders</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -77,6 +93,12 @@ const NGOSidebar = () => {
 };
 
 const NGODashboard = () => {
+  const navigate = useNavigate();
+  
+  const handleNewProject = () => {
+    navigate('/dashboard/ngo/projects/new');
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-offwhite">
@@ -87,14 +109,14 @@ const NGODashboard = () => {
               <SidebarTrigger />
               <h1 className="text-xl font-semibold ml-4">NGO Dashboard</h1>
             </div>
-            <Button variant="emerald" className="hover-scale" size="sm">
+            <Button variant="emerald" className="hover:scale-105 transition-transform" size="sm" onClick={handleNewProject}>
               <PlusCircle className="w-4 h-4 mr-2" />
               New Project
             </Button>
           </header>
           <main className="flex-1 p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <Card className="hover-scale">
+              <Card className="hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate('/dashboard/ngo/regions')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Active Regions</CardTitle>
                 </CardHeader>
@@ -119,7 +141,7 @@ const NGODashboard = () => {
                 </CardContent>
               </Card>
               
-              <Card className="hover-scale">
+              <Card className="hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate('/dashboard/ngo/projects/status')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Project Status</CardTitle>
                 </CardHeader>
@@ -144,7 +166,7 @@ const NGODashboard = () => {
                 </CardContent>
               </Card>
               
-              <Card className="hover-scale">
+              <Card className="hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate('/dashboard/ngo/impact')}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Impact Metrics</CardTitle>
                 </CardHeader>
@@ -161,19 +183,23 @@ const NGODashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 hover-scale">
+              <Card className="lg:col-span-2 hover:scale-105 transition-transform">
                 <CardHeader>
                   <CardTitle>Regional Projects</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {[
-                      {name: "Clean Water Initiative - East Africa", region: "East Africa", status: "On Track"},
-                      {name: "Education Support Program", region: "West Africa", status: "At Risk"},
-                      {name: "Healthcare Access Initiative", region: "Southern Africa", status: "On Hold"},
-                      {name: "Community Development", region: "Central Africa", status: "On Track"},
+                      {id: 1, name: "Clean Water Initiative - East Africa", region: "East Africa", status: "On Track"},
+                      {id: 2, name: "Education Support Program", region: "West Africa", status: "At Risk"},
+                      {id: 3, name: "Healthcare Access Initiative", region: "Southern Africa", status: "On Hold"},
+                      {id: 4, name: "Community Development", region: "Central Africa", status: "On Track"},
                     ].map((project, i) => (
-                      <div key={i} className="bg-offwhite rounded-md p-4">
+                      <div 
+                        key={i} 
+                        className="bg-offwhite rounded-md p-4 cursor-pointer hover:bg-white transition-colors"
+                        onClick={() => navigate(`/dashboard/ngo/projects/${project.id}`)}
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-medium">{project.name}</h3>
                           <span className={`px-2 py-1 text-xs rounded-full ${
@@ -195,19 +221,23 @@ const NGODashboard = () => {
                 </CardContent>
               </Card>
               
-              <Card className="hover-scale">
+              <Card className="hover:scale-105 transition-transform">
                 <CardHeader>
                   <CardTitle>Regional Coordinators</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {[
-                      {name: "Ngozi Okonjo", region: "East Africa"},
-                      {name: "Kwame Darko", region: "West Africa"},
-                      {name: "Thabo Mbeki", region: "Southern Africa"},
-                      {name: "Marie Diop", region: "Central Africa"},
+                      {id: 1, name: "Ngozi Okonjo", region: "East Africa"},
+                      {id: 2, name: "Kwame Darko", region: "West Africa"},
+                      {id: 3, name: "Thabo Mbeki", region: "Southern Africa"},
+                      {id: 4, name: "Marie Diop", region: "Central Africa"},
                     ].map((coordinator, i) => (
-                      <div key={i} className="flex items-center gap-3">
+                      <div 
+                        key={i} 
+                        className="flex items-center gap-3 cursor-pointer hover:bg-offwhite p-2 rounded-md transition-colors"
+                        onClick={() => navigate(`/dashboard/ngo/teams/${coordinator.id}`)}
+                      >
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald to-teal flex items-center justify-center text-white font-medium">
                           {coordinator.name.split(' ').map(n => n[0]).join('')}
                         </div>
@@ -217,7 +247,14 @@ const NGODashboard = () => {
                         </div>
                       </div>
                     ))}
-                    <Button variant="outline" size="sm" className="w-full mt-2">View All Team Members</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full mt-2"
+                      onClick={() => navigate('/dashboard/ngo/teams')}
+                    >
+                      View All Team Members
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
