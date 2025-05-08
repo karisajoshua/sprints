@@ -1,0 +1,15 @@
+
+{
+  "name": "ngo-dashboard-functions",
+  "version": "1.0.0",
+  "description": "Edge functions for NGO Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "http": "^0.0.1-security",
+    "@supabase/supabase-js": "^2.39.0",
+    "uuid": "^9.0.0"
+  }
+}

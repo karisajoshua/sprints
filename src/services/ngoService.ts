@@ -12,7 +12,7 @@ import {
 } from "@/types/ngo";
 
 // Organizations
-export const createOrganization = async (organization: Partial<Organization>): Promise<Organization> => {
+export const createOrganization = async (organization: Pick<Organization, 'name'> & Partial<Omit<Organization, 'name'>>): Promise<Organization> => {
   const { data, error } = await supabase
     .from('organizations')
     .insert(organization)
@@ -96,7 +96,7 @@ export const getProjectById = async (projectId: string): Promise<Project> => {
   return data;
 };
 
-export const createProject = async (project: Partial<Project>): Promise<Project> => {
+export const createProject = async (project: Pick<Project, 'name' | 'organization_id'> & Partial<Omit<Project, 'name' | 'organization_id'>>): Promise<Project> => {
   const { data, error } = await supabase
     .from('projects')
     .insert(project)
@@ -178,7 +178,7 @@ export const getProjectUpdates = async (projectId: string): Promise<ProjectUpdat
   return data || [];
 };
 
-export const addProjectUpdate = async (update: Partial<ProjectUpdate>): Promise<ProjectUpdate> => {
+export const addProjectUpdate = async (update: Pick<ProjectUpdate, 'project_id' | 'title' | 'content'> & Partial<Omit<ProjectUpdate, 'project_id' | 'title' | 'content'>>): Promise<ProjectUpdate> => {
   const { data, error } = await supabase
     .from('project_updates')
     .insert(update)

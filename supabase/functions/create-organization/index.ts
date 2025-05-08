@@ -1,0 +1,137 @@
+
+// Using relative imports without ESM that will work in both Deno and Node environments
+import { serve } from "http/server";
+import { createClient } from "@supabase/supabase-js";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+interface CreateOrgRequest {
+  name: string;
+  description?: string;
+  logo_url?: string;
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // Get the authorization header from the request
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Missing authorization header" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        }
+      );
+    }
+
+    // Create a Supabase client with the user's JWT
+    const supabaseClient = createClient(
+      // These will be available within the Supabase Edge Function environment
+      process.env.SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+      }
+    );
+
+    // Get the user from the JWT
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized", details: userError }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        }
+      );
+    }
+
+    // Parse the request body
+    const { name, description, logo_url }: CreateOrgRequest = await req.json();
+
+    if (!name) {
+      return new Response(
+        JSON.stringify({ error: "Organization name is required" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        }
+      );
+    }
+
+    // Create the organization
+    const { data: organization, error: orgError } = await supabaseClient
+      .from("organizations")
+      .insert({
+        name,
+        description: description || null,
+        logo_url: logo_url || null,
+      })
+      .select()
+      .single();
+
+    if (orgError) {
+      console.error("Error creating organization:", orgError);
+      return new Response(
+        JSON.stringify({ error: "Failed to create organization" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        }
+      );
+    }
+
+    // Add the user as an admin of the organization
+    const { error: memberError } = await supabaseClient
+      .from("organization_members")
+      .insert({
+        organization_id: organization.id,
+        profile_id: user.id,
+        role: "admin",
+      });
+
+    if (memberError) {
+      console.error("Error adding member to organization:", memberError);
+      return new Response(
+        JSON.stringify({
+          error: "Organization created but failed to add you as admin",
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        }
+      );
+    }
+
+    return new Response(JSON.stringify({ organization }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch (error: any) {
+    console.error("Error in create-organization function:", error);
+    return new Response(
+      JSON.stringify({ error: "Internal server error", details: error.message }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      }
+    );
+  }
+});
