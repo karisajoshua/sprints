@@ -23,6 +23,9 @@ const buttonVariants = cva(
         purple: "bg-purple text-white hover:bg-purple/90",
         lavender: "bg-lavender text-white hover:bg-lavender/90",
         gradient: "bg-gradient-lavender text-white hover:opacity-90",
+        emerald: "bg-lavender text-white hover:bg-lavender/90", // Remapped emerald to lavender
+        sand: "bg-magenta text-white hover:bg-magenta/90", // Remapped sand to magenta
+        teal: "bg-purple text-white hover:bg-purple/90", // Remapped teal to purple
       },
       size: {
         default: "h-10 px-4 py-2",

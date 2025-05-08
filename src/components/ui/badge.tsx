@@ -25,6 +25,9 @@ const badgeVariants = cva(
         progress: "border-transparent bg-lavender/20 text-lavender",
         review: "border-transparent bg-magenta/20 text-magenta",
         done: "border-transparent bg-purple/20 text-purple",
+        emerald: "border-transparent bg-lavender text-white hover:bg-lavender/80", // Remapped emerald to lavender
+        sand: "border-transparent bg-magenta text-white hover:bg-magenta/80", // Remapped sand to magenta
+        teal: "border-transparent bg-purple text-white hover:bg-purple/80", // Remapped teal to purple
       },
     },
     defaultVariants: {
