@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Slack, Github, Trello, Zoom, Google } from "lucide-react";
+import { Slack, Github, Trello, FileSpreadsheet, Mail, Zap } from "lucide-react";
 
 const IntegrationLogo = ({ 
   icon: Icon, 
@@ -35,11 +35,11 @@ const IntegrationsSection = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 max-w-5xl mx-auto">
           <IntegrationLogo icon={Slack} name="Slack" delay={100} />
-          <IntegrationLogo icon={Google} name="Google Drive" delay={200} />
-          <IntegrationLogo icon={Zoom} name="Zoom" delay={300} />
+          <IntegrationLogo icon={FileSpreadsheet} name="Google Drive" delay={200} />
+          <IntegrationLogo icon={Mail} name="Email" delay={300} />
           <IntegrationLogo icon={Trello} name="Trello" delay={400} />
           <IntegrationLogo icon={Github} name="GitHub" delay={500} />
-          <IntegrationLogo icon={Slack} name="Notion" delay={600} />
+          <IntegrationLogo icon={Zap} name="Notion" delay={600} />
         </div>
       </div>
     </section>
