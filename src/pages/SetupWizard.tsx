@@ -74,7 +74,7 @@ const SetupWizard = () => {
             </Button>
           )}
           {step === "teamType" && (
-            <div /> {/* Empty div for spacing when there's no back button */}
+            <div></div> {/* Empty div for spacing when there's no back button */}
           )}
           
           {step === "teamDetails" && (
