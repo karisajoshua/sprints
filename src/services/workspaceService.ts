@@ -1,16 +1,23 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Workspace, WorkspaceMember, WorkspaceInvitation } from "@/types/workspace";
 import { v4 as uuidv4 } from "uuid";
 
 // Workspace operations
 export const createWorkspace = async (name: string, description: string | null = null, logo_url: string | null = null): Promise<Workspace> => {
+  // Get the current user
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  
+  if (userError) throw userError;
+  if (!userData.user) throw new Error("No authenticated user found");
+
+  // Insert the workspace with the current user as creator
   const { data, error } = await supabase
     .from('workspaces')
     .insert({
       name,
       description,
-      logo_url
+      logo_url,
+      created_by: userData.user.id
     })
     .select()
     .single();
@@ -18,18 +25,15 @@ export const createWorkspace = async (name: string, description: string | null =
   if (error) throw error;
   
   // After creating workspace, add the creator as admin
-  const user = await supabase.auth.getUser();
-  if (user.data?.user) {
-    await supabase
-      .from('workspace_members')
-      .insert({
-        workspace_id: data.id,
-        profile_id: user.data.user.id,
-        role: 'admin',
-        is_admin: true,
-        invited_by: user.data.user.id
-      });
-  }
+  await supabase
+    .from('workspace_members')
+    .insert({
+      workspace_id: data.id,
+      profile_id: userData.user.id,
+      role: 'admin',
+      is_admin: true,
+      invited_by: userData.user.id
+    });
 
   return data;
 };
