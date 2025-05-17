@@ -11,8 +11,11 @@ const corsHeaders = {
 
 interface InvitationRequest {
   email: string;
-  role: 'admin' | 'manager' | 'member';
+  role: string;
+  isAdmin: boolean;
+  isHR: boolean;
   organizationId: string;
+  token?: string;
 }
 
 serve(async (req) => {
@@ -66,11 +69,11 @@ serve(async (req) => {
 
     // Parse the request body
     const requestData = await req.json();
-    const { email, role, organizationId } = requestData as InvitationRequest;
+    const { email, role, isAdmin, isHR, organizationId, token: providedToken } = requestData as InvitationRequest;
 
-    if (!email || !role || !organizationId) {
+    if (!email || !organizationId) {
       return new Response(
-        JSON.stringify({ error: "Email, role, and organizationId are required" }),
+        JSON.stringify({ error: "Email and organizationId are required" }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 400,
@@ -78,13 +81,17 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin of the organization
-    const { data: isAdmin, error: adminCheckError } = await supabaseClient
-      .rpc("is_organization_admin", { org_id: organizationId });
+    // Check if user is admin or HR of the workspace
+    const { data: isAdminOrHR, error: adminCheckError } = await supabaseClient
+      .from("workspace_members")
+      .select("is_admin, is_hr")
+      .eq("workspace_id", organizationId)
+      .eq("profile_id", user.id)
+      .single();
 
-    if (adminCheckError || !isAdmin) {
+    if (adminCheckError || (!isAdminOrHR?.is_admin && !isAdminOrHR?.is_hr)) {
       return new Response(
-        JSON.stringify({ error: "You are not an admin of this organization" }),
+        JSON.stringify({ error: "You don't have permission to invite members to this workspace" }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 403,
@@ -93,17 +100,20 @@ serve(async (req) => {
     }
 
     // Generate a token and expiration date (7 days from now)
-    const token = uuidv4();
+    const token = providedToken || uuidv4();
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
     // Create the invitation
     const { data: invitation, error: inviteError } = await supabaseClient
-      .from("invitations")
+      .from("workspace_invitations")
       .insert({
-        organization_id: organizationId,
+        workspace_id: organizationId,
         email,
         role,
+        is_admin: isAdmin,
+        is_hr: isHR,
+        invited_by: user.id,
         token,
         expires_at: expiresAt.toISOString(),
       })
@@ -125,14 +135,14 @@ serve(async (req) => {
     // For now, we'll just return the invitation object with token
     console.log(`Invitation created for ${email}, token: ${token}`);
 
+    const baseUrl = Deno.env.get("PUBLIC_URL") || req.headers.get("origin") || '';
+    const inviteUrl = `${baseUrl}/join?token=${token}`;
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        invitation: { 
-          ...invitation,
-          // Include the inviteUrl that would be sent in the email
-          inviteUrl: `${Deno.env.get("PUBLIC_URL") || ''}/join?token=${token}` 
-        } 
+        invitation,
+        inviteUrl
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

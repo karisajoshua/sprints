@@ -30,7 +30,14 @@ import NGOPartnersPage from "./pages/ngo/PartnersPage";
 import NGOStakeholdersPage from "./pages/ngo/StakeholdersPage";
 import NGOProjectDetailPage from "./pages/ngo/ProjectDetailPage";
 import NGONewProjectPage from "./pages/ngo/NewProjectPage";
-import CreateOrganizationPage from "./pages/ngo/CreateOrganizationPage"; // Add import for new page
+import CreateOrganizationPage from "./pages/ngo/CreateOrganizationPage";
+
+// Import Workspace pages
+import { WorkspaceProvider } from "./components/workspace/WorkspaceContext";
+import CreateWorkspacePage from "./pages/workspace/CreateWorkspacePage";
+import WorkspacePage from "./pages/workspace/WorkspacePage";
+import InvitePage from "./pages/workspace/InvitePage";
+import JoinPage from "./pages/workspace/JoinPage";
 
 const queryClient = new QueryClient();
 
@@ -42,37 +49,50 @@ const App = () => {
           <AuthProvider>
             <TooltipProvider>
               <OrganizationProvider>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/setup" element={<SetupWizard />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/dashboard/scrum" element={<ScrumDashboard />} />
-                  <Route path="/dashboard/startup" element={<StartupDashboard />} />
-                  
-                  {/* Auth Routes */}
-                  <Route path="/auth/signin" element={<SignIn />} />
-                  <Route path="/auth/signup" element={<SignUp />} />
-                  <Route path="/auth/thankyou" element={<ThankYou />} />
-                  
-                  {/* Protected NGO Routes */}
-                  <Route element={<RequireAuth />}>
-                    <Route path="/dashboard/ngo" element={<NGODashboard />} />
-                    <Route path="/dashboard/ngo/create-organization" element={<CreateOrganizationPage />} /> {/* Add new route */}
-                    <Route path="/dashboard/ngo/projects" element={<NGOProjectsPage />} />
-                    <Route path="/dashboard/ngo/projects/new" element={<NGONewProjectPage />} />
-                    <Route path="/dashboard/ngo/projects/:id" element={<NGOProjectDetailPage />} />
-                    <Route path="/dashboard/ngo/regions" element={<NGORegionsPage />} />
-                    <Route path="/dashboard/ngo/impact" element={<NGOImpactPage />} />
-                    <Route path="/dashboard/ngo/teams" element={<NGOTeamsPage />} />
-                    <Route path="/dashboard/ngo/partners" element={<NGOPartnersPage />} />
-                    <Route path="/dashboard/ngo/stakeholders" element={<NGOStakeholdersPage />} />
-                  </Route>
-                  
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Toaster />
-                <Sonner />
+                <WorkspaceProvider>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/setup" element={<SetupWizard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard/scrum" element={<ScrumDashboard />} />
+                    <Route path="/dashboard/startup" element={<StartupDashboard />} />
+                    
+                    {/* Auth Routes */}
+                    <Route path="/auth/signin" element={<SignIn />} />
+                    <Route path="/auth/signup" element={<SignUp />} />
+                    <Route path="/auth/thankyou" element={<ThankYou />} />
+                    
+                    {/* Protected NGO Routes */}
+                    <Route element={<RequireAuth />}>
+                      <Route path="/dashboard/ngo" element={<NGODashboard />} />
+                      <Route path="/dashboard/ngo/create-organization" element={<CreateOrganizationPage />} />
+                      <Route path="/dashboard/ngo/projects" element={<NGOProjectsPage />} />
+                      <Route path="/dashboard/ngo/projects/new" element={<NGONewProjectPage />} />
+                      <Route path="/dashboard/ngo/projects/:id" element={<NGOProjectDetailPage />} />
+                      <Route path="/dashboard/ngo/regions" element={<NGORegionsPage />} />
+                      <Route path="/dashboard/ngo/impact" element={<NGOImpactPage />} />
+                      <Route path="/dashboard/ngo/teams" element={<NGOTeamsPage />} />
+                      <Route path="/dashboard/ngo/partners" element={<NGOPartnersPage />} />
+                      <Route path="/dashboard/ngo/stakeholders" element={<NGOStakeholdersPage />} />
+                    </Route>
+                    
+                    {/* Workspace Routes */}
+                    <Route element={<RequireAuth />}>
+                      <Route path="/workspace/create" element={<CreateWorkspacePage />} />
+                      <Route path="/workspace/:workspaceId" element={<WorkspacePage />} />
+                      <Route path="/workspace/:workspaceId/invite" element={<InvitePage />} />
+                      <Route path="/dashboard/events" element={<WorkspacePage />} />
+                    </Route>
+                    
+                    {/* Public Workspace Routes */}
+                    <Route path="/join" element={<JoinPage />} />
+                    
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Toaster />
+                  <Sonner />
+                </WorkspaceProvider>
               </OrganizationProvider>
             </TooltipProvider>
           </AuthProvider>
