@@ -39,12 +39,41 @@ export const createWorkspace = async (name: string, description: string | null =
 };
 
 export const getUserWorkspaces = async (): Promise<Workspace[]> => {
+  // Get the current user ID
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData?.user) return [];
+  
+  const userId = userData.user.id;
+  
+  // First get the workspace IDs that the user is a member of
+  const { data: membershipData, error: membershipError } = await supabase
+    .from('workspace_members')
+    .select('workspace_id')
+    .eq('profile_id', userId);
+  
+  if (membershipError) {
+    console.error("Error fetching workspace memberships:", membershipError);
+    return [];
+  }
+  
+  if (!membershipData || membershipData.length === 0) {
+    return [];
+  }
+  
+  // Then get the actual workspace details
+  const workspaceIds = membershipData.map(item => item.workspace_id);
+  
   const { data, error } = await supabase
     .from('workspaces')
     .select('*')
+    .in('id', workspaceIds)
     .order('name');
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching workspaces:", error);
+    return [];
+  }
+  
   return data || [];
 };
 
