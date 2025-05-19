@@ -83,10 +83,8 @@ export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
       // If we have workspaces but no current workspace selected, select the first one
       if (fetchedWorkspaces.length > 0 && !currentWorkspace) {
         setCurrentWorkspace(fetchedWorkspaces[0]);
-      } else if (fetchedWorkspaces.length === 0) {
-        // If user has no workspaces, redirect to create workspace page
-        navigate('/workspace/create');
       }
+      // Removed the auto-redirect to workspace creation
     } catch (error) {
       console.error('Failed to fetch workspaces:', error);
       toast({
@@ -116,7 +114,7 @@ export const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
           description: 'You are not a member of this workspace',
           variant: 'destructive'
         });
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error) {
       console.error('Failed to fetch workspace members:', error);

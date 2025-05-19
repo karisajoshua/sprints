@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrganization } from '@/components/ngo/OrganizationContext';
@@ -17,6 +16,7 @@ export const useRequireOrganization = () => {
     // Only check after we're done loading auth and organization data
     if (!authLoading && !orgLoading) {
       // If user is logged in but has no organizations, redirect to create organization page
+      // (This hook is specifically for organization routes, so we'll keep this behavior)
       if (user && organizations.length === 0) {
         navigate('/org/create');
       }
