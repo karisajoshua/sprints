@@ -51,7 +51,10 @@ const App = () => {
               <OrganizationProvider>
                 <WorkspaceProvider>
                   <Routes>
+                    {/* Home page is the default entry point */}
                     <Route path="/" element={<Index />} />
+                    
+                    {/* Setup and Dashboard Routes */}
                     <Route path="/setup" element={<SetupWizard />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/dashboard/scrum" element={<ScrumDashboard />} />
