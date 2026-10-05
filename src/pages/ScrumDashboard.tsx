@@ -35,7 +35,7 @@ const ScrumSidebar = ({ activeTab, setActiveTab }: {
     <Sidebar className="sidebar-gradient text-white">
       <SidebarHeader className="flex items-center px-6 py-4 h-[60px]">
         <span className="text-white font-poppins font-bold text-xl">
-          Scrum<span className="text-lavender">Board</span>
+          Sprints
         </span>
       </SidebarHeader>
       <SidebarContent>
