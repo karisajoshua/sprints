@@ -1,73 +1,62 @@
-# Welcome to your Lovable project
+# Sprints
 
-## Project info
+A multi-workspace project and program management application built with React, TypeScript and Supabase.
 
-**URL**: https://lovable.dev/projects/2829e42f-4861-458b-bf64-8261d43410c6
+## What the repository demonstrates
 
-## How can I edit this code?
+The application includes multiple dashboard modes and authenticated workspace flows. The current routing exposes Scrum, startup and NGO-oriented dashboards alongside organization, project, region, impact, team, partner and stakeholder views.
 
-There are several ways of editing your application.
+Key implementation areas visible in the repository include:
 
-**Use Lovable**
+- Authentication and protected application routes
+- Organization and workspace context
+- Workspace creation, invitation and join flows
+- NGO project creation and project detail views
+- Scrum, startup and NGO dashboard experiences
+- React Query for client-side server-state management
+- Supabase integration
+- Recharts-based data visualization capability
+- Responsive component architecture using Tailwind CSS and Radix/shadcn UI primitives
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2829e42f-4861-458b-bf64-8261d43410c6) and start prompting.
+## Tech stack
 
-Changes made via Lovable will be committed automatically to this repo.
+`React 18` · `TypeScript` · `Vite` · `Supabase` · `TanStack Query` · `React Router` · `Tailwind CSS` · `shadcn/ui` · `Recharts`
 
-**Use your preferred IDE**
+## Application structure
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```text
+src/
+├── pages/
+│   ├── auth/          # sign-in, sign-up and account flows
+│   ├── ngo/           # projects, regions, impact, teams and stakeholders
+│   └── workspace/     # workspace creation, invitations and membership
+├── components/
+├── hooks/
+└── App.tsx            # application routing and providers
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+supabase/
+└── ...                # backend configuration and related project resources
+```
 
-Follow these steps:
+## Run locally
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+git clone https://github.com/karisajoshua/sprints.git
+cd sprints
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Useful commands:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+npm run lint
+npm run preview
+```
 
-**Use GitHub Codespaces**
+Supabase-backed functionality requires a correctly configured development project and environment variables. Do not commit private keys or service-role credentials.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Engineering status
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/2829e42f-4861-458b-bf64-8261d43410c6) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This README describes functionality that can be identified from the repository structure and application routes. It does not imply that every workflow is production-ready or that every external integration has been independently verified. Security-sensitive deployment should include verification of database policies, authorization boundaries, server-side validation and secret handling.
