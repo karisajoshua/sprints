@@ -19,7 +19,7 @@ const Index = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    document.title = "OneMap Africa - Agile Project Management";
+    document.title = "Sprints - Project & Program Management";
     
     const observer = new IntersectionObserver(
       (entries) => {
