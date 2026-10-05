@@ -9,9 +9,9 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div>
-            <h3 className="font-bold text-white mb-4">OneMap Africa</h3>
+            <h3 className="font-bold text-white mb-4">Sprints</h3>
             <p className="text-sm max-w-xs">
-              Agile project management built specifically for African teams.
+              Project and program management for teams that need clarity, accountability, and delivery.
             </p>
           </div>
           
@@ -72,7 +72,7 @@ const Footer = () => {
         
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm mb-4 md:mb-0">
-            &copy; {currentYear} OneMap Africa. All rights reserved.
+            &copy; {currentYear} Sprints. All rights reserved.
           </div>
           <div className="flex gap-4">
             <a href="#" className="hover:text-white transition-colors">
