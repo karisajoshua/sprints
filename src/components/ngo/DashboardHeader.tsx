@@ -16,7 +16,7 @@ const DashboardHeader = () => {
     <header className="bg-white shadow-sm h-[60px] flex items-center justify-between px-6">
       <div className="flex items-center">
         <SidebarTrigger />
-        <h1 className="text-xl font-semibold ml-4">NGO Dashboard</h1>
+        <h1 className="text-xl font-semibold ml-4">Program Dashboard</h1>
       </div>
       <Button variant="emerald" className="hover:scale-105 transition-transform" size="sm" onClick={handleNewProject}>
         <PlusCircle className="w-4 h-4 mr-2" />
