@@ -9,7 +9,7 @@ const NGOSidebar = () => {
     <Sidebar>
       <SidebarHeader className="flex items-center px-6 py-4 h-[60px]">
         <span className="text-emerald font-poppins font-bold text-xl">
-          OneMap<span className="text-sand">Africa</span>
+          Sprints
         </span>
       </SidebarHeader>
       <SidebarContent>
