@@ -30,7 +30,7 @@ const NGODashboard = () => {
       // Show a loading toast
       toast({
         title: "Setting up your dashboard",
-        description: "Please wait while we prepare your NGO dashboard...",
+        description: "Please wait while we prepare your program dashboard...",
       });
     }
     
@@ -70,7 +70,7 @@ const NGODashboard = () => {
       setIsSettingUp(false);
       toast({
         title: "Setup Complete!",
-        description: "Your NGO dashboard is ready.",
+        description: "Your program dashboard is ready.",
       });
     }
   }, [isSettingUp, organizations, orgLoading, user]);
@@ -81,7 +81,7 @@ const NGODashboard = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-offwhite">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald mb-4"></div>
         <p className="text-emerald font-medium">
-          {isSettingUp ? "Setting up your NGO dashboard..." : "Loading..."}
+          {isSettingUp ? "Setting up your program dashboard..." : "Loading..."}
         </p>
       </div>
     );
