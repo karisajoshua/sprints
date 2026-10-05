@@ -17,10 +17,10 @@ const HeroSection = () => {
           <div className="fadeIn">
             <h1 className="text-charcoal mb-6 relative">
               <span className="relative">
-                Agile Project Management 
+                Project & Program Management 
                 <span className="absolute -bottom-2 left-0 w-24 h-2 bg-emerald/20 rounded-full"></span>
               </span>
-              <br />Built for African Teams
+              <br />Built for Teams That Deliver
             </h1>
             <p className="text-lg md:text-xl text-charcoal/80 mb-8 max-w-lg">
               OneMap Africa brings your remote team together with intuitive task
@@ -46,7 +46,7 @@ const HeroSection = () => {
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
                 <div className="mx-auto text-sm font-medium text-emerald">
-                  OneMap Africa Dashboard
+                  Sprints Dashboard
                 </div>
               </div>
               <div className="p-4">
