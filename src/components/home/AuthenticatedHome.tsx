@@ -58,7 +58,7 @@ export const AuthenticatedHome = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-emerald font-poppins font-bold text-xl md:text-2xl">
-                OneMap<span className="text-sand">Africa</span>
+                Sprints
               </span>
             </Link>
           </div>
